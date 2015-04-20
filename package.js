@@ -6,16 +6,12 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-  "use strict";
-
   api.versionsFrom('1.0.1');
   api.addFiles('upstream/lib/main.js');
 });
 
 Package.onTest(function(api) {
-  "use strict";
-
   api.use('tinytest');
   api.use('packaging:autopublish-test');
-  api.addFiles('tests/main.js');
+  api.addFiles('upstream/tests/main.js');
 });
