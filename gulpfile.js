@@ -62,9 +62,12 @@ gulp.task('updateVersion', function() {
 
 
 gulp.task('commit', function(){
-  var version = autopublish.version;
+  var
+    path = __dirname,
+    version = autopublish.version
+  ;
 
-  return gulp.src('./*')
+  return gulp.src('./*', {cwd: path})
     .pipe(git.commit(undefined, {
       args: '-am "Bump to version ' + version + '!"',
       disableMessageRequirement: true
@@ -73,7 +76,10 @@ gulp.task('commit', function(){
 
 // Run git push
 gulp.task('push', function(){
-  return git.push('origin', 'master', function (err) {
+  var
+    path = __dirname
+  ;
+  return git.push('origin', 'master', {cwd: path}, function (err) {
     if (err) throw err;
   });
 });
