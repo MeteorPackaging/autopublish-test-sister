@@ -55,12 +55,12 @@ gulp.task('checkout', function(){
 });
 
 
-// Clone the upstream repo
-// optional parameter: --tag <tag_name>
 gulp.task('commit', function(){
   var version = autopublish.version;
 
-  git.commit('Bump to version ' + version + '!', {
-      args: '-a'
-  });
+  return gulp.src('./*')
+    .pipe(git.commit(undefined, {
+      args: '-am "Bump to version ' + version + '!"',
+      disableMessageRequirement: true
+    }));
 });
