@@ -1,5 +1,5 @@
 {
-  "version": "0.1.17",
+  "version": "0.1.16",
   "upstream": {
     "git": "https://github.com/MeteorPackaging/autopublish-test.git",
     "versionFile": "package.js"
