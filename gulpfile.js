@@ -62,5 +62,10 @@ gulp.task('commit', function(){
     .pipe(git.commit(undefined, {
       args: '-am "Bump to version ' + version + '!"',
       disableMessageRequirement: true
+    }, function (err) {
+      if (err) throw err;
+      git.push('origin', 'master', function (err) {
+        if (err) throw err;
+      });
     }));
 });
