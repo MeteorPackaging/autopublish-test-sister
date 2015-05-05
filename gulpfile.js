@@ -6,10 +6,20 @@ var
   del = require('del'),
   replace = require('gulp-replace'),
   runSequence = require('run-sequence'),
-	autopublish = require('./autopublish.json'),
-  versionFile = autopublish.upstream.versionFile
+	autopublish = require('./autopublish.json')
 ;
 
+
+// Clone the upstream repo
+// optional parameter: --tag <tag_name>
+gulp.task('clone', function(){
+  return del(['upstream'], function(err){
+    if (err) throw err;
+    git.clone(autopublish.upstream.git, {args: 'upstream'}, function (err) {
+      if (err) throw err;
+    });
+  });
+});
 
 // Clone the upstream repo
 // optional parameter: --tag <tag_name>
@@ -20,17 +30,18 @@ gulp.task('checkout', function(){
     path = __dirname + '/upstream/'
   ;
   console.log('checking out ' + tag);
-  return del(['upstream'], function(err){
+  return git.checkout(tag, {cwd: path}, function (err) {
     if (err) throw err;
-    git.clone(autopublish.upstream.git, {args: 'upstream'}, function (err) {
+    git.status({cwd: path}, function (err) {
       if (err) throw err;
-      git.checkout(tag, {cwd: path}, function (err) {
-        if (err) throw err;
-        git.status({cwd: path}, function (err) {
-          if (err) throw err;
-        });
-      });
     });
+  });
+});
+
+
+gulp.task('getUpstream', function(callback) {
+  runSequence('clone', 'checkout', function (err) {
+    if (err) throw err;
   });
 });
 
@@ -38,7 +49,11 @@ gulp.task('checkout', function(){
 // Picks up current version of upstream repo and updates
 // 'package.js' and 'autopublish.json' accordingly
 gulp.task('updateVersion', function() {
-  var path = './upstream/' + versionFile;
+  var
+    versionFile = autopublish.upstream.versionFile,
+    path = './upstream/' + versionFile
+  ;
+
   return fs.readFile(path, 'utf8', function (err, content) {
     if (err) throw err;
 
@@ -88,7 +103,9 @@ gulp.task('push', function(){
 // default task
 // run 'gulp' from command line
 gulp.task('default', function(callback) {
-  runSequence('checkout', 'updateVersion', 'commit', 'push', function (err) {
+  console.log('Running all tasks...');
+  // runSequence('getUpstream', 'updateVersion', 'commit', 'push', function (err) {
+  runSequence('updateVersion', 'commit', 'push', function (err) {
     if (err) throw err;
   });
 });
